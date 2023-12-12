@@ -1,0 +1,111 @@
+package cpu;
+
+import java.util.*;
+
+/**
+ *
+ * @author Kerollos Mansour
+ * @author Mina Hany
+ */
+
+class Process {
+        String name;
+        int arrivalTime;
+        int burstTime;
+        int priority;
+        int waitTime;
+        int turnaroundTime;
+        public Process(String name, int arrivalTime , int burst, int priority) {
+            this.name = name;
+            this.arrivalTime = arrivalTime ;
+            this.burstTime = burst;
+            this.priority = priority;
+            this.waitTime = 0;
+            this.turnaroundTime = 0;
+        }
+}
+
+public class CPU {
+    
+    //Shortest- Job First (SJF) Non-Preemptive
+    private static void SJF(List<Process> processes){
+        
+        processes.sort(Comparator.comparing(p -> p.burstTime));
+        int currentTime = 0;
+        double totalTurnaroundTime = 0;
+        double totalWaitingTime = 0;
+        
+        for (Process process : processes) {
+            // Wait for the process to arrive
+            if (currentTime < process.arrivalTime) {
+                currentTime = process.arrivalTime;
+            }
+            // Execute the process
+            process.waitTime = currentTime - process.arrivalTime;
+            currentTime += process.burstTime;
+            process.turnaroundTime = currentTime - process.arrivalTime;
+
+            System.out.println("Turnaround Time for " + process.name + ": " + process.turnaroundTime);
+            System.out.println("Waiting Time for " + process.name + ": " + process.waitTime + "\n");
+            
+            totalTurnaroundTime +=  process.turnaroundTime;
+            totalWaitingTime += process.waitTime;
+        }
+//        processes.sort(Comparator.comparing(p -> p.name));        //Re-order the list as it created or inserted
+        System.out.println("Average Turnaround Time: " + totalTurnaroundTime/processes.size());
+        System.out.println("Average Waiting Time: " + totalWaitingTime/processes.size());
+        
+    }
+    
+    //Priority Scheduling Non-Preemptive
+    private static void priority(List<Process> processes){
+        
+        processes.sort(Comparator.comparing(p -> p.priority));
+        int currentTime = 0;
+        double totalTurnaroundTime = 0;
+        double totalWaitingTime = 0;
+        
+        for (Process process : processes) {
+            // Wait for the process to arrive
+            if (currentTime < process.arrivalTime) {
+                currentTime = process.arrivalTime;
+            }
+            // Execute the process
+            process.waitTime = currentTime - process.arrivalTime;
+            currentTime += process.burstTime;
+            process.turnaroundTime = currentTime - process.arrivalTime;
+
+            System.out.println("Turnaround Time for " + process.name + ": " + process.turnaroundTime);
+            System.out.println("Waiting Time for " + process.name + ": " + process.waitTime + "\n");
+            
+            totalTurnaroundTime +=  process.turnaroundTime;
+            totalWaitingTime += process.waitTime;
+        }
+        processes.sort(Comparator.comparing(p -> p.name));        //Re-order the list as it created or inserted
+        System.out.println("Average Turnaround Time: " + totalTurnaroundTime/processes.size());
+        System.out.println("Average Waiting Time: " + totalWaitingTime/processes.size());
+        
+    }
+    
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        //List for the processes
+        List<Process> processes = new ArrayList<>();
+
+        Process p1 = new Process("p1", 0, 10, 3);
+        Process p2 = new Process("p2", 0, 1, 1);
+        Process p3 = new Process("p3", 0, 2, 4);
+        Process p4 = new Process("p4", 0, 1, 5);
+        Process p5 = new Process("p5", 0, 5, 2);
+        
+        processes.add(p1);
+        processes.add(p2);
+        processes.add(p3);
+        processes.add(p4);
+        processes.add(p5);
+//        SJF(processes);           //Shortest- Job First (SJF) Non-Preemptive
+//        priority(processes);      //Priority Scheduling Non-Preemptive
+    }
+
+}
