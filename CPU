@@ -6,25 +6,38 @@ import java.util.*;
  *
  * @author Kerollos Mansour
  * @author Mina Hany
+ * @author Adel Magdy
  */
 
 class Process {
-        String name;
-        int arrivalTime;
-        int burstTime;
-        int priority;
-        int waitTime;
-        int turnaroundTime;
-        public Process(String name, int arrivalTime , int burst, int priority) {
-            this.name = name;
-            this.arrivalTime = arrivalTime ;
-            this.burstTime = burst;
-            this.priority = priority;
-            this.waitTime = 0;
-            this.turnaroundTime = 0;
-        }
-}
+    String name;
+    String color;
+    int arrivalTime;
+    int burstTime;
+    int priority;
+    int waitTime;
+    int turnaroundTime;
+    public Process(String name, String color, int arrivalTime , int burst, int priority) {
+        this.name = name;
+        this.color = color;
+        this.arrivalTime = arrivalTime ;
+        this.burstTime = burst;
+        this.priority = priority;
+        this.waitTime = 0;
+        this.turnaroundTime = 0;
+    }
+    
+    public int getBurstTime() {
+        return burstTime;
+    }
 
+    public int getPriority() {
+        return priority;
+    }
+    public int getArrivalTime() {
+        return arrivalTime;
+    }
+}
 public class CPU {
     
     //Shortest- Job First (SJF) Non-Preemptive
@@ -56,6 +69,49 @@ public class CPU {
         System.out.println("Average Waiting Time: " + totalWaitingTime/processes.size());
         
     }
+        // Shortest Remaining Time First (SRTF) Scheduling
+        private static void SRTF(List<Process> processes) {
+                int currentTime = 0;
+                double totalTurnaroundTime = 0;
+                double totalWaitingTime = 0;
+                int completedProcesses = 0;
+        
+                while (completedProcesses < processes.size()) {
+                    // Sort the processes based on remaining burst time first then priority and ArrivalTime
+                    Collections.sort(processes, Comparator.comparingInt(Process::getBurstTime)
+                            .thenComparingInt(Process::getPriority)
+                            .thenComparingInt(Process::getArrivalTime));
+                    Process currentProcess = processes.get(0);
+        
+                    // Wait for the process to arrive
+                    if (currentTime < currentProcess.arrivalTime) {
+                        currentTime = currentProcess.arrivalTime;
+                    }
+        
+                    // Execute the process
+                    currentProcess.waitTime = currentTime - currentProcess.arrivalTime;
+                    currentTime += currentProcess.burstTime;
+                    currentProcess.turnaroundTime = currentTime - currentProcess.arrivalTime;
+        
+                    System.out.println("\nTime " + currentTime + ": Executing " + currentProcess.name +
+                            " (Color: " + currentProcess.color + ")");
+                    System.out.println("Turnaround Time for " + currentProcess.name + ": " + currentProcess.turnaroundTime);
+                    System.out.println("Waiting Time for " + currentProcess.name + ": " + currentProcess.waitTime + "\n");
+        
+                    totalTurnaroundTime += currentProcess.turnaroundTime;
+                    totalWaitingTime += currentProcess.waitTime;
+        
+                    // Remove the completed process
+                    processes.remove(currentProcess);
+                    completedProcesses++;
+                }
+        
+                double avgTurnaroundTime = completedProcesses > 0 ? totalTurnaroundTime / completedProcesses : 0;
+                double avgWaitingTime = completedProcesses > 0 ? totalWaitingTime / completedProcesses : 0;
+        
+                System.out.println("Average Turnaround Time: " + avgTurnaroundTime);
+                System.out.println("Average Waiting Time: " + avgWaitingTime);
+            }
     
     //Priority Scheduling Non-Preemptive
     private static void priority(List<Process> processes){
@@ -88,24 +144,39 @@ public class CPU {
     }
     
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        
+
         //List for the processes
         List<Process> processes = new ArrayList<>();
 
-        Process p1 = new Process("p1", 0, 10, 3);
-        Process p2 = new Process("p2", 0, 1, 1);
-        Process p3 = new Process("p3", 0, 2, 4);
-        Process p4 = new Process("p4", 0, 1, 5);
-        Process p5 = new Process("p5", 0, 5, 2);
-        
-        processes.add(p1);
-        processes.add(p2);
-        processes.add(p3);
-        processes.add(p4);
-        processes.add(p5);
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of processes: ");
+        int numProcesses = scanner.nextInt();
+
+        for (int i = 1; i <= numProcesses; i++) {
+            System.out.println("Enter details for Process " + i + ":");
+            System.out.print("Name: ");
+            String name = scanner.next();
+
+            System.out.print("Color: ");
+            String color = scanner.next();
+
+            System.out.print("Arrival Time: ");
+            int arrivalTime = scanner.nextInt();
+
+            System.out.print("Burst Time: ");
+            int burstTime = scanner.nextInt();
+
+            System.out.print("Priority Number: ");
+            int priority = scanner.nextInt();
+
+            processes.add(new Process(name, color, arrivalTime, burstTime, priority));
+        }
+
 //        SJF(processes);           //Shortest- Job First (SJF) Non-Preemptive
+//        SRTF(processes);
 //        priority(processes);      //Priority Scheduling Non-Preemptive
+//
     }
 
 }
